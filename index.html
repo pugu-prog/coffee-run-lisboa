@@ -135,19 +135,21 @@
   .map-embed iframe { display: block; }
   .brand {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0px;
     margin-bottom: 16px;
   }
-  .brand-logo { width: 46px; height: 46px; flex-shrink: 0; }
-  .brand-text { text-align: left; line-height: 1.15; }
-  .brand-name { font-size: 20px; font-weight: 700; color: #1f4e6b; }
-  .brand-tag { font-size: 10px; letter-spacing: 3px; color: #5b7d8c; }
+  .brand-logo { width: 50px; height: 50px; flex-shrink: 0; }
+  .brand-text { text-align: center; line-height: 1.15; }
+  .brand-tag { font-size: 10px; letter-spacing: 3px; color: #5b7d8c; margin-bottom: 2px; }
+  .brand-name { font-size: 22px; font-weight: 700; color: #1f4e6b; }
   @media (prefers-color-scheme: dark) {
     .brand-name { color: #8fc1d9; }
     .brand-tag { color: #6f96a6; }
   }
+  .page-title { font-size: 18px; font-weight: 600; margin: 0 0 2px; color: var(--muted); }
   .site-footer {
     text-align: center;
     margin-top: 40px;
@@ -176,8 +178,8 @@
       <rect x="472" y="222" width="16" height="16" fill="#d4a94c" transform="rotate(45 480 230)"/>
     </svg>
     <div class="brand-text">
-      <div class="brand-name">Run &amp; Flow</div>
       <div class="brand-tag">LISBOA</div>
+      <div class="brand-name">Run &amp; Flow</div>
     </div>
   </div>
   <h1>Lisboa Coffee Run</h1>
