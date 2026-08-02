@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="lb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lisboa Coffee Run</title>
+<style>
+  :root {
+    --bg: #faf6f0;
+    --card: #ffffff;
+    --ink: #241a12;
+    --muted: #6b5d4f;
+    --accent: #b5651d;
+    --line: #e8ddd0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1512;
+      --card: #241d18;
+      --ink: #f2e9dd;
+      --muted: #b5a793;
+      --accent: #e0964a;
+      --line: #3a2f26;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 20px 16px 60px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+  header { text-align: center; margin-bottom: 20px; }
+  h1 { font-size: 24px; margin: 0 0 4px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin: 16px 0 24px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat b { display: block; font-size: 18px; }
+  .stat span { font-size: 12px; color: var(--muted); }
+  .progress-wrap {
+    background: var(--line);
+    border-radius: 8px;
+    height: 6px;
+    margin: 0 0 24px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    background: var(--accent);
+    height: 100%;
+    width: 0%;
+    transition: width .3s ease;
+  }
+  .stop {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .stop-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .stop.done .stop-head { opacity: .55; }
+  .num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .stop.done .num { background: var(--muted); }
+  .stop-title { flex: 1; }
+  .stop-title b { display: block; font-size: 16px; }
+  .stop-title .km { font-size: 12px; color: var(--muted); }
+  .chevron {
+    font-size: 13px;
+    color: var(--muted);
+    transition: transform .2s ease;
+  }
+  .stop.open .chevron { transform: rotate(180deg); }
+  .stop-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .25s ease;
+    padding: 0 16px;
+  }
+  .stop.open .stop-body {
+    max-height: 260px;
+    padding: 0 16px 16px;
+  }
+  .stop-body p { margin: 0; font-size: 14.5px; line-height: 1.55; color: var(--ink); }
+  .tip {
+    margin-top: 24px;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.6;
+  }
+  .reset {
+    display: block;
+    margin: 20px auto 0;
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>☕ Lisboa Coffee Run</h1>
+  <div class="sub">Graça → Alfama → Rossio</div>
+</header>
+
+<div class="stats">
+  <div class="stat"><b>6,5 km</b><span>Distanz</span></div>
+  <div class="stat"><b>~41 min</b><span>Tempo</span></div>
+  <div class="stat"><b>70m ↑ / 140m ↓</b><span>Héicht</span></div>
+</div>
+
+<div class="progress-wrap"><div class="progress-bar" id="bar"></div></div>
+
+<div id="stops"></div>
+
+<button class="reset" onclick="resetAll()">Rescht zrécksetzen</button>
+
+<div class="tip">Tipp beim Zielen: 1 Fakt pro Stop, kuerz an ustiechend — dann weiderlafen.</div>
+
+<script>
+const stops = [
+  {
+    name: "Baga Baga",
+    km: "0 km · Start",
+    text: "Traditionell Bäckerei mëtten a Graça, manner touristesch wéi Alfama, awer mat der selwechter Vue. Hei fänken d'Leit un mat waarmem Kaffi an enger Nata."
+  },
+  {
+    name: "Igreja / Convento da Graça",
+    km: "0,3 km",
+    text: "Gegrënnt 1271 vum Kinnek Afonso III, fir d'Augustiner-Mönche. Den 1755er Äerdbiewen huet vill kaputt gemaach, dofir gesäit d'Kierch haut Baroque aus."
+  },
+  {
+    name: "Miradouro das Portas do Sol",
+    km: "~2,6 km",
+    text: "Hei stoung mol eng arabesch Stadpaart — \"Poort vun der Sonn\", well hei als éischt d'Moiessonn op Alfama gefall ass. Vue iwwer ganz Alfama bis São Vicente de Fora."
+  },
+  {
+    name: "Miradouro de Santa Luzia",
+    km: "~3 km",
+    text: "Zwee bloe Azulejo-Biller un der Wand: d'Praça do Comércio virum Äerdbiewen 1755, an d'Aschloen vum Castelo de São Jorge duerch d'Krezzuchsritter 1147."
+  },
+  {
+    name: "Sé de Lisboa",
+    km: "~3,5 km",
+    text: "Gebaut ab 1147, direkt nodeems Afonso Henriques Lissabon vun de Mouren erobert huet — op enger fréierer Moschee. Déi eelst Kierch vun der Stad."
+  },
+  {
+    name: "Alfama",
+    km: "~4 km",
+    text: "Eelst Quartier vu Lissabon, iwwerlieft den Äerdbiewen 1755 bal onberührt. Hei ass de Fado gebuer ginn. Enk Gaassen aus der arabescher Zäit."
+  },
+  {
+    name: "Rossio",
+    km: "~5,5 km",
+    text: "Zentrale Plaz zënter dem Mëttelalter — hei stoung den Inquisitiounspalais. No 1755 nei gebaut, mam bekannte wellefërmege Buedem aus dem 19. Joerhonnert."
+  },
+  {
+    name: "Café Nicola",
+    km: "6,5 km · Ofschloss",
+    text: "Gegrënnt 1787 vun engem Italiener, Nicola Breteiro. De Poet Bocage war hei Stammgaascht. 1935 koum den Art-Deco Look dobäi — perfekten Ofschloss-Kaffi."
+  }
+];
+
+const container = document.getElementById('stops');
+const bar = document.getElementById('bar');
+const STORAGE_KEY = 'coffee-run-progress';
+
+function render() {
+  const done = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  container.innerHTML = '';
+  stops.forEach((s, i) => {
+    const el = document.createElement('div');
+    el.className = 'stop' + (done.includes(i) ? ' done' : '');
+    el.innerHTML = `
+      <div class="stop-head" data-i="${i}">
+        <div class="num">${done.includes(i) ? '✓' : i + 1}</div>
+        <div class="stop-title"><b>${s.name}</b><div class="km">${s.km}</div></div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="stop-body"><p>${s.text}</p></div>
+    `;
+    container.appendChild(el);
+  });
+  bar.style.width = (done.length / stops.length * 100) + '%';
+
+  container.querySelectorAll('.stop-head').forEach(head => {
+    head.addEventListener('click', () => {
+      const parent = head.parentElement;
+      const wasOpen = parent.classList.contains('open');
+      container.querySelectorAll('.stop.open').forEach(o => o.classList.remove('open'));
+      if (!wasOpen) parent.classList.add('open');
+    });
+    head.addEventListener('dblclick', () => {
+      const i = parseInt(head.dataset.i);
+      let done = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      if (done.includes(i)) done = done.filter(x => x !== i);
+      else done.push(i);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(done));
+      render();
+    });
+  });
+}
+
+function resetAll() {
+  localStorage.removeItem(STORAGE_KEY);
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
