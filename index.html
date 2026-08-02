@@ -126,6 +126,13 @@
     border-radius: 20px;
     font-size: 13px;
   }
+  .map-embed {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+  .map-embed iframe { display: block; }
 </style>
 </head>
 <body>
@@ -142,6 +149,10 @@
 </div>
 
 <div class="progress-wrap"><div class="progress-bar" id="bar"></div></div>
+
+<div class="map-embed">
+  <iframe src="https://www.komoot.com/tour/3164861919/embed?share_token=acQXdJWda8IWJSrFteSOSoz8FQpZeAwRROgr3sS76yEPOGGtRd&hl=de&layout=classic&profile=1" width="100%" height="700" frameborder="0" scrolling="no"></iframe>
+</div>
 
 <div id="stops"></div>
 
